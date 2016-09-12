@@ -27,13 +27,13 @@ def generatePassword(length):
     for i in range(length):
         char = math.floor(random.random() * 94) + 32;
         string = string + chr(char)
-    print (string)
     return string
 
 
 def mutatePassword(oldPass):
     removeChar = .1
     addChar = .2
+    addCharToEnd = .3
     changeChar = 1
     mutation = random.random()
     charToChange = math.floor(random.random() * len(oldPass))
@@ -41,6 +41,8 @@ def mutatePassword(oldPass):
         password = oldPass[:charToChange] + oldPass[charToChange + 1:]
     elif mutation < addChar:
         password = oldPass[:charToChange] + chr(math.floor(random.random() * 94) + 32) + oldPass[charToChange:]
+    elif mutation < addCharToEnd:
+        password = oldPass + chr(math.floor(random.random() * 94) + 32)
     elif mutation < changeChar:
         password = oldPass[:charToChange] + chr(math.floor(random.random() * 94) + 32) + oldPass[charToChange + 1:]
     return password;
@@ -58,21 +60,37 @@ def sortPasswords(passwords):
                 passwords[i+1] = tmp
                 swapped = True
 
+## I need to make this method more random
+def doSelectionAndCreation(passwords, key):
+    half = math.floor(len(passwords)/2)
+    for i, password in enumerate(passwords[half:len(passwords)]):
+        string = mutatePassword(passwords[i].string)
+        score = comparePassword(string, key)
+        passwords[half + i] = Password(string, score)
 
-
+def printUpdate(passwords):
+    print(passwords[0].string + " " + str(passwords[0].score))
+    print(passwords[50].string + "  " + str(passwords[50].score))
+    print(passwords[len(passwords) - 1].string + "  " + str(passwords[len(passwords) - 1].score))
 
 def main():
     passwords = list()
-    key = "banana"
+    key = "I do sure enjoy bananas, apples, and peaches!"
     for i in range(100):
             string = generatePassword(math.floor(random.random() * 10))
             passwords.append(Password(string, comparePassword(string, key)))
-    sortPasswords(passwords)
-    for password in passwords:
-        print(password.string + "      " + str(password.score))
-        
+    gen = 0
+    while passwords[0].score != 1:        
+        sortPasswords(passwords)
+        doSelectionAndCreation(passwords, key)
+        print("Generation: " + str(gen))
+        printUpdate(passwords)
+        gen = gen + 1
+        if gen % 10 == 0:
+            input("Press any key to proceed...")
+        print()
 
-
+    print("The winning password was evolved!")
 
 
 

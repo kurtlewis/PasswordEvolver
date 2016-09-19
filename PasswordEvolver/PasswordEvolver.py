@@ -31,10 +31,12 @@ def generatePassword(length):
 
 
 def mutatePassword(oldPass):
+    """Mutates the given password slightly"""
     removeChar = .1
     addChar = .2
     addCharToEnd = .3
-    changeChar = 1
+    changeChar = .9
+    multipleMutations = 1
     mutation = random.random()
     charToChange = math.floor(random.random() * len(oldPass))
     if mutation < removeChar:
@@ -45,6 +47,9 @@ def mutatePassword(oldPass):
         password = oldPass + chr(math.floor(random.random() * 94) + 32)
     elif mutation < changeChar:
         password = oldPass[:charToChange] + chr(math.floor(random.random() * 94) + 32) + oldPass[charToChange + 1:]
+    elif mutation < multipleMutations:
+        password = mutatePassword(oldPass)
+        password = mutatePassword(password)
     return password;
 
 def sortPasswords(passwords):
